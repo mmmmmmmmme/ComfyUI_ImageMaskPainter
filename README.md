@@ -14,7 +14,7 @@ Install through ComfyUI Manager by Searching **ComfyUI Image Mask Painter**
 ## How to use
 1. Image as input
 <img width="1091" height="613" alt="step01" src="https://github.com/user-attachments/assets/788a46ac-ab42-4f54-bb1c-24c702ea3091" />
-2. Selcect this node, click excute to this node
+2. Selcect this node, click execute to this node
 3. Paint on the canvas
 <img width="1091" height="613" alt="step02" src="https://github.com/user-attachments/assets/264d0e2f-dccd-4014-bade-f1d1ed2165c5" />
 4. Click run workflow to get output mask
