@@ -20,4 +20,6 @@ Install through ComfyUI Manager by Searching **ComfyUI Image Mask Painter**
 4. Click run workflow to get output mask
 <img width="1091" height="613" alt="step03" src="https://github.com/user-attachments/assets/f98e1246-93f7-463a-8d3a-97eeb75ef589" />
 
+## Video
+▶ [YouTube](https://youtu.be/7s1Q5KZv5hg)
 
