@@ -29,7 +29,7 @@ Documentation = "https://github.com/mmmmmmmmme/ComfyUI_ImageMaskPainter/wiki"
 "Bug Tracker" = "https://github.com/mmmmmmmmme/ComfyUI_ImageMaskPainter/issues"
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "@mmmmmmmmm"
 DisplayName = "ComfyUI_ImageMaskPainter"
 Icon = ""
 includes = [] 
