@@ -1,7 +1,7 @@
 [project]
 name = "imagemaskpainter"
 description = "A node that enables users to draw a mask on an external canvas by inputting an image, outputting a mask for further use. Please turn off ComfyUI and reopen it when first added this node, it will then function as normal."
-version = "1.0.1"
+version = "1.0.0"
 license = {file = "LICENSE"} 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)
