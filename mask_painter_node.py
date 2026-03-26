@@ -12,7 +12,10 @@ class MaskPainter:
         return {
             "required": {
                 "input_image": ("IMAGE",),  # Image Input
-                "mask_data": ("STRING", {"default": "{}"}),  # Painted Mask Data (hidden)
+                "mask_data": ("STRING", {
+                    "default": "{}",
+                    "display": "hidden"
+                }),  # Painted Mask Data (hidden)
             },
             "optional": {},
         }
