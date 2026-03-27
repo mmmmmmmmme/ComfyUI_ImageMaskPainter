@@ -23,6 +23,21 @@ function hideWidgetForGood(node, widget, suffix = '') {
     }
 }
 
+// UPDATE: recover canvas from base64
+function restoreMaskFromBase64(node, maskBase64, width, height) {
+    if (!maskBase64 || !width || !height) return;
+    const { maskCanvas, maskCtx } = node.maskPainter;
+    maskCanvas.width = width;
+    maskCanvas.height = height;
+    
+    const img = new Image();
+    img.onload = () => {
+        maskCtx.drawImage(img, 0, 0, width, height);
+        node.redrawCanvas();
+    };
+    img.src = `data:image/png;base64,${maskBase64}`;
+}
+
 // Register Node at Frontend
 app.registerExtension({
     name: "Comfy.MaskPainter",
@@ -99,6 +114,17 @@ app.registerExtension({
                     maskDataWidget.value = maskDataWidget.value || "{}";
                     hideWidgetForGood(this, maskDataWidget);
                     this._hiddenWidgets = { mask_data: maskDataWidget };
+
+                    // UPDATE: recover mask when inisialise
+                    try {
+                        const maskInfo = JSON.parse(maskDataWidget.value);
+                        if (maskInfo.data) {
+                            restoreMaskFromBase64(this, maskInfo.data, maskInfo.width, maskInfo.height);
+                        }
+                    } catch (e) {
+                        console.warn("[MaskPainter] Failed to parse mask data on init:", e);
+                    }
+
                 }
 
                 // Still about Widget Painting
@@ -177,10 +203,29 @@ app.registerExtension({
                             canvas.height = img.height;
                             maskCanvas.width = img.width;
                             maskCanvas.height = img.height;
-                            // Reset Mask Canvas
-                            const maskCtx = maskCanvas.getContext("2d");
-                            maskCtx.fillStyle = "#000";
-                            maskCtx.fillRect(0, 0, img.width, img.height);
+
+                            // UPDATE:recover maskCanvas from mask_data instead of clear it
+                            const maskDataWidget = this._hiddenWidgets?.mask_data || this.widgets.find(w => w.name === "mask_data");
+                            if (maskDataWidget) {
+                                try {
+                                    const maskInfo = JSON.parse(maskDataWidget.value);
+                                    if (maskInfo.data) {
+                                        // UPDATE: recovr mask from save mask_data
+                                        restoreMaskFromBase64(this, maskInfo.data, maskInfo.width, maskInfo.height);
+                                    } else {
+                                        // UPDATE: clear when no mask
+                                        const maskCtx = maskCanvas.getContext("2d");
+                                        maskCtx.fillStyle = "#000";
+                                        maskCtx.fillRect(0, 0, img.width, img.height);
+                                    }
+                                } catch (e) {
+                                    // UPDATE: clear when decode fails
+                                    const maskCtx = maskCanvas.getContext("2d");
+                                    maskCtx.fillStyle = "#000";
+                                    maskCtx.fillRect(0, 0, img.width, img.height);
+                                }
+                            }
+
                             // Save Image and Resize Node
                             this.maskPainter.image = img;
                             const nodeWidth = this.size[0] || 400;
@@ -281,6 +326,29 @@ app.registerExtension({
                     ctx.fillText("Clear All: Delete Painted Mask", canvas.width / 2, canvas.height / 2 + 50);
                 }
             };
+
+            // UPDATE: ensure mask data recover correctly whether node is serialised or not
+            const originalSerialize = nodeType.prototype.serialize;
+            nodeType.prototype.serialize = function() {
+                const data = originalSerialize ? originalSerialize.apply(this, arguments) : {};
+                // UPDATE: ensure mask_data is serialised
+                const maskDataWidget = this._hiddenWidgets?.mask_data || this.widgets.find(w => w.name === "mask_data");
+                if (maskDataWidget) {
+                    data.widgets_values = data.widgets_values || [];
+                    const idx = this.widgets.indexOf(maskDataWidget);
+                    if (idx >= 0) {
+                        data.widgets_values[idx] = maskDataWidget.value;
+                    }
+                }
+                return data;
+            };
         }
+    },
+    
+    // UPDATE: solve no render when first reload
+    async setup() {
+        console.log("[MaskPainter] Extension setup complete");
+        // UPDATE: reregister when node is triggered
+        app.graph.setDirtyCanvas(true);
     }
 });

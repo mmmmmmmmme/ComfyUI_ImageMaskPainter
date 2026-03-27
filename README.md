@@ -23,3 +23,8 @@ Install through ComfyUI Manager by Searching **ComfyUI Image Mask Painter**
 ## Video
 ▶ [YouTube](https://youtu.be/7s1Q5KZv5hg)
 
+## Update
+- version 0.1
+    1. Fix Mask disappear after executation
+    2. Attempt to fix node no render when first load
+
